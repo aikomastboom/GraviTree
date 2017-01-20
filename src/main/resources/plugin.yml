@@ -1,0 +1,11 @@
+name: GraviTree
+main: me.ryanhamshire.GraviTree.GraviTree
+version: 2.7.2
+commands:
+   treesfall:
+      description: Toggles tree blocks falling when a tree is chopped.
+      usage: /TreesFall
+permissions:
+    gravitree.chop:
+        description: Grants permission to apply gravity to chopped trees.
+        default: op
