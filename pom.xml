@@ -4,6 +4,7 @@
   <artifactId>GraviTree</artifactId>
   <version>2.7.2</version>
   <build>
+      <finalName>${project.name}</finalName>
       <plugins>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
