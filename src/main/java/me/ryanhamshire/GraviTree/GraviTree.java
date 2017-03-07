@@ -422,12 +422,13 @@ public class GraviTree extends JavaPlugin implements Listener
                 @SuppressWarnings("deprecation")
                 FallingBlock fallingBlock = blockToDrop.getWorld().spawnFallingBlock(blockToDrop.getLocation().add(.5, 0, .5), blockToDrop.getTypeId(), blockToDrop.getData());
                 fallingBlock.setDropItem(false);
-                    
-                if(!GraviTree.blockIsLog(this.blockToDrop.getRelative(BlockFace.UP)))
-                {
-                    BlockBreakEvent event = new BlockBreakEvent(this.blockToDrop, this.player);
-                    //Bukkit.getPluginManager().callEvent(event); Fix NCP and related issues(?)
-                }
+
+                //RoboMWM - doesn't seem to be necessary (was perhaps used for EWG "compatibility"?)
+//                if(!GraviTree.blockIsLog(this.blockToDrop.getRelative(BlockFace.UP)))
+//                {
+//                    BlockBreakEvent event = new BlockBreakEvent(this.blockToDrop, this.player);
+//                    Bukkit.getPluginManager().callEvent(event);
+//                }
                 
                 blockToDrop.setType(Material.AIR);
                 
