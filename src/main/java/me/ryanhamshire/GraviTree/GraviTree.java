@@ -426,7 +426,7 @@ public class GraviTree extends JavaPlugin implements Listener
                 if(!GraviTree.blockIsLog(this.blockToDrop.getRelative(BlockFace.UP)))
                 {
                     BlockBreakEvent event = new BlockBreakEvent(this.blockToDrop, this.player);
-                    Bukkit.getPluginManager().callEvent(event);
+                    //Bukkit.getPluginManager().callEvent(event); Fix NCP and related issues(?)
                 }
                 
                 blockToDrop.setType(Material.AIR);
