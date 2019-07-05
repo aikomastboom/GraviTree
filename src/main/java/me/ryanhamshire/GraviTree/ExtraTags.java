@@ -1,11 +1,8 @@
 package me.ryanhamshire.GraviTree;
 
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.Tag;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

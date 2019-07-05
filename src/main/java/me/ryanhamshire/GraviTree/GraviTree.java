@@ -55,6 +55,8 @@ public class GraviTree extends JavaPlugin implements Listener
     private String config_chopOff;
     private boolean config_canDisable;
     boolean config_chopModeOnByDefault;
+    private boolean config_overworld_only;
+    private boolean config_logs_damage_players;
 	
 	//initializes well...   everything
 	public void onEnable()
@@ -84,6 +86,12 @@ public class GraviTree extends JavaPlugin implements Listener
         
         this.config_canDisable = config.getBoolean("Players Can Disable", true);
         outConfig.set("Players Can Disable", this.config_canDisable);
+
+        this.config_overworld_only = config.getBoolean("LogsOnlyFallInOverworld", true);
+        outConfig.set("LogsOnlyFallInOverworld", this.config_overworld_only);
+
+        this.config_logs_damage_players = config.getBoolean("FallingLogsDamagePlayers", false);
+        outConfig.set("FallingLogsDamagePlayers", this.config_logs_damage_players);
         
         try
         {
@@ -173,7 +181,7 @@ public class GraviTree extends JavaPlugin implements Listener
         Block brokenBlock = event.getBlock();
         
         World world = brokenBlock.getWorld();
-        if(world.getEnvironment() != Environment.NORMAL) return;
+        if(this.config_overworld_only && world.getEnvironment() != Environment.NORMAL) return;
                
         if(!GraviTree.blockIsLog(brokenBlock)) return;
         
@@ -262,7 +270,7 @@ public class GraviTree extends JavaPlugin implements Listener
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     void onEntityDamage(EntityDamageEvent event)
     {
-        if(event.getEntityType() != EntityType.PLAYER) return;
+        if(this.config_logs_damage_players || event.getEntityType() != EntityType.PLAYER) return;
         
         DamageCause cause = event.getCause();
         if(cause != DamageCause.FALLING_BLOCK && cause != DamageCause.SUFFOCATION) return;
