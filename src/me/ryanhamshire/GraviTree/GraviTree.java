@@ -116,6 +116,8 @@ public class GraviTree extends JavaPlugin implements Listener
             new Metrics(this, 3371);
         }
         catch (Throwable ignored){}
+
+        AddLogEntry("GraviTree enabled.");
 	}
 	
 	public void onDisable()
@@ -339,11 +341,10 @@ public class GraviTree extends JavaPlugin implements Listener
     private boolean blockIsRootType(Block block)
     {
         Material type = block.getType();
-        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE || type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND)
+        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE || type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND || type == Material.PODZOL)
         {
             return true;
         }
-//GraviTree.AddLogEntry("not root type " + type.name());
             return false;
     }
     
@@ -354,7 +355,6 @@ public class GraviTree extends JavaPlugin implements Listener
         {
             return true;
         }
-//GraviTree.AddLogEntry("not tree topper " + type.name());
             return false;
     }
     
