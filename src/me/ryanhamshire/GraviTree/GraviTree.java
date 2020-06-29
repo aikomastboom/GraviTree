@@ -113,7 +113,7 @@ public class GraviTree extends JavaPlugin implements Listener
 
         try
         {
-            new Metrics(this);
+            new Metrics(this, 3371);
         }
         catch (Throwable ignored){}
 	}
