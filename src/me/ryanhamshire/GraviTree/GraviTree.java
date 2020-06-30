@@ -333,19 +333,17 @@ public class GraviTree extends JavaPlugin implements Listener
     private static boolean blockIsLog(Block block)
     {
         Material type = block.getType();
-        if(Tag.LOGS.isTagged(type))
+        if(Tag.LOGS.isTagged(type) || type == Material.CRIMSON_STEM || type == Material.WARPED_STEM)
         {
             return true;
         }
         return false;
     }
 
-    private Set<Material> unglazedTerracotta = new HashSet<>();
-    
     private boolean blockIsRootType(Block block)
     {
         Material type = block.getType();
-        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE || type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND || type == Material.PODZOL)
+        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE || type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND || type == Material.PODZOL || type == Material.NETHERRACK || type == Material.WARPED_NYLIUM || type == Material.CRIMSON_NYLIUM)
         {
             return true;
         }
@@ -355,7 +353,7 @@ public class GraviTree extends JavaPlugin implements Listener
     private boolean blockIsTreeTopper(Block block)
     {
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.SNOW)
+        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.SNOW || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
             return true;
         }
@@ -365,7 +363,7 @@ public class GraviTree extends JavaPlugin implements Listener
     private static boolean blockIsPassthrough(Block block)
     {
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || Tag.LOGS.isTagged(type) || type == Material.SNOW)
+        if(Tag.LEAVES.isTagged(type) || Tag.LOGS.isTagged(type)  || type == Material.SNOW || type == Material.CRIMSON_STEM || type == Material.WARPED_STEM || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
             return true;
         }
@@ -377,7 +375,7 @@ public class GraviTree extends JavaPlugin implements Listener
         if(block.getY() < 0) return false;
         
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.VINE || type == Material.COCOA || type == Material.TORCH || type == Material.SNOW)
+        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.VINE || type == Material.COCOA || type == Material.TORCH || type == Material.SNOW || type == Material.WEEPING_VINES || type == Material.TWISTING_VINES || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
             return true;
         }
@@ -387,7 +385,7 @@ public class GraviTree extends JavaPlugin implements Listener
     static boolean blockIsTreeAdjacent(Block block)
     {
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.VINE || type == Material.COCOA || type == Material.TORCH || type == Material.SNOW || type == Material.GRASS || type == Material.DIRT || type == Material.STONE || type == Material.COBBLESTONE || type == Material.TALL_GRASS)
+        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.VINE || type == Material.COCOA || type == Material.TORCH || type == Material.SNOW || type == Material.GRASS || type == Material.DIRT || type == Material.STONE || type == Material.COBBLESTONE || type == Material.TALL_GRASS || type == Material.WEEPING_VINES || type == Material.TWISTING_VINES || type == Material.NETHERRACK || type == Material.CRIMSON_NYLIUM || type == Material.CRIMSON_ROOTS || type == Material.WARPED_NYLIUM || type == Material.WARPED_ROOTS || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
             return true;
         }

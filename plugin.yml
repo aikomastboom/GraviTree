@@ -1,6 +1,5 @@
 name: GraviTree
 main: me.ryanhamshire.GraviTree.GraviTree
-version: 2.9.0
 authors: ['Big_Scary', 'RoboMWM', 'DmitryRendov']
 version: ${project.version}
 api-version: 1.14
