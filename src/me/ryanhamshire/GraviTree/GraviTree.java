@@ -57,6 +57,7 @@ public class GraviTree extends JavaPlugin implements Listener
     boolean config_chopModeOnByDefault;
     private boolean config_overworld_only;
     private boolean config_logs_damage_players;
+    private boolean config_allow_blocks_dropping;
 	
 	//initializes well...   everything
 	public void onEnable()
@@ -92,6 +93,10 @@ public class GraviTree extends JavaPlugin implements Listener
 
         this.config_logs_damage_players = config.getBoolean("FallingLogsDamagePlayers", false);
         outConfig.set("FallingLogsDamagePlayers", this.config_logs_damage_players);
+
+        this.config_allow_blocks_dropping = config.getBoolean("AllowBlocksDropping", false);
+        outConfig.set("AllowBlocksDropping", this.config_allow_blocks_dropping);
+
         
         try
         {
@@ -265,7 +270,7 @@ public class GraviTree extends JavaPlugin implements Listener
         {
             radius = 2;
         }
-        FallTask fallTask = new FallTask(brokenBlock, true, bestUnderBlock.getX() - radius, bestUnderBlock.getX() + radius, bestUnderBlock.getZ() - radius, bestUnderBlock.getZ() + radius, player);
+        FallTask fallTask = new FallTask(brokenBlock, true, this.config_allow_blocks_dropping, bestUnderBlock.getX() - radius, bestUnderBlock.getX() + radius, bestUnderBlock.getZ() - radius, bestUnderBlock.getZ() + radius, player);
         Bukkit.getScheduler().runTaskLater(GraviTree.instance, fallTask, 1L);
     }
     
@@ -394,16 +399,18 @@ public class GraviTree extends JavaPlugin implements Listener
     {
         private Block blockToDrop;
         private boolean breakUnderBlocks;
+        private boolean allowBlocksDroppring;
         private int max_x;
         private int max_z;
         private int min_x;
         private int min_z;
         private Player player;
 
-        public FallTask(Block blockToDrop, boolean breakUnderBlocks, int min_x, int max_x, int min_z, int max_z, Player player)
+        public FallTask(Block blockToDrop, boolean breakUnderBlocks, boolean allowBlocksDroppring, int min_x, int max_x, int min_z, int max_z, Player player)
         {
             this.blockToDrop = blockToDrop;
             this.breakUnderBlocks = breakUnderBlocks;
+            this.allowBlocksDroppring = allowBlocksDroppring;
             this.min_x = min_x;
             this.min_z = min_z;
             this.max_x = max_x;
@@ -417,7 +424,7 @@ public class GraviTree extends JavaPlugin implements Listener
             if(GraviTree.blockIsLog(this.blockToDrop))
             {
                 FallingBlock fallingBlock = blockToDrop.getWorld().spawnFallingBlock(blockToDrop.getLocation().add(.5, 0, .5), blockToDrop.getBlockData());
-                fallingBlock.setDropItem(false);
+                fallingBlock.setDropItem(this.allowBlocksDroppring);
 
                 blockToDrop.setType(Material.AIR);
                 
@@ -453,7 +460,7 @@ public class GraviTree extends JavaPlugin implements Listener
                     Block underBlock = block.getRelative(BlockFace.DOWN);
                     if(GraviTree.blockIsBreakable(underBlock))
                     {
-                        FallTask fallTask = new FallTask(block, block != aboveBlock, this.min_x, this.max_x, this.min_z, this.max_z, this.player);
+                        FallTask fallTask = new FallTask(block, block != aboveBlock, this.allowBlocksDroppring, this.min_x, this.max_x, this.min_z, this.max_z, this.player);
                         newTasks.add(fallTask);
                         foundLogAbove = true;
                     }
@@ -592,7 +599,7 @@ public class GraviTree extends JavaPlugin implements Listener
                 long delayInTicks = 1;
                 while((blockToDrop = blocksToFall.poll()) != null)
                 {
-                    FallTask fallTask = new FallTask(blockToDrop, true, this.min_x, this.max_x, this.min_z, this.max_z, this.player);
+                    FallTask fallTask = new FallTask(blockToDrop, true, this.allowBlocksDroppring, this.min_x, this.max_x, this.min_z, this.max_z, this.player);
                     Bukkit.getScheduler().runTaskLater(GraviTree.instance, fallTask, delayInTicks++);
                 }
             }
