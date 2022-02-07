@@ -3,6 +3,7 @@ main: me.ryanhamshire.GraviTree.GraviTree
 authors: ['Big_Scary', 'RoboMWM', 'DmitryRendov']
 version: ${project.version}
 api-version: 1.14
+softdepend: [PlaceholderAPI]
 commands:
    treesfall:
       description: Toggles tree blocks falling when a tree is chopped.
