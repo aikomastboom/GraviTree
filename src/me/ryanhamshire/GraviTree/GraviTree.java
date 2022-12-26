@@ -120,7 +120,12 @@ public class GraviTree extends JavaPlugin implements Listener
             new Metrics(this, 3371);
         }
         catch (Throwable ignored){}
-
+        
+        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        	new me.ryanhamshire.GraviTree.PlaceholderAPIHook(instance).register();
+        	AddLogEntry("GraviTree hooked into PlaceholderAPI.");
+        }
+        
         AddLogEntry("GraviTree enabled.");
 	}
 
