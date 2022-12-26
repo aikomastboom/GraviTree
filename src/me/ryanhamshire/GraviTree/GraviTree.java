@@ -41,7 +41,7 @@ public class GraviTree extends JavaPlugin implements Listener
 	//for logging to the console and log file
 	private static Logger log = Logger.getLogger("Minecraft");
     static GraviTree instance;
-	
+
 	//adds a server log entry
 	public static void AddLogEntry(String entry)
 	{
@@ -57,33 +57,33 @@ public class GraviTree extends JavaPlugin implements Listener
     private boolean config_overworld_only;
     private boolean config_logs_damage_players;
     private boolean config_allow_blocks_dropping;
-	
+
 	//initializes well...   everything
 	public void onEnable()
-	{ 		
+	{
 		GraviTree.instance = this;
-		
+
         //read configuration settings (note defaults)
         this.getDataFolder().mkdirs();
         File configFile = new File(this.getDataFolder().getPath() + File.separatorChar + "config.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         FileConfiguration outConfig = new YamlConfiguration();
-        
+
         this.config_universalPermission = config.getBoolean("All Players Have Permission", true);
         outConfig.set("All Players Have Permission", this.config_universalPermission);
-        
+
         this.config_chopModeOnByDefault = config.getBoolean("Chop Mode Defaults ON", true);
         outConfig.set("Chop Mode Defaults ON", this.config_chopModeOnByDefault);
-        
+
         this.config_chopInfoMessage = config.getString("Messages.Chop Toggle Info", "You can toggle falling tree blocks with /TreesFall.");
         outConfig.set("Messages.Chop Toggle Info", this.config_chopInfoMessage);
-        
+
         this.config_chopOn = config.getString("Messages.Chop Toggle On", "Falling tree blocks enabled.");
         outConfig.set("Messages.Chop Toggle On", this.config_chopOn);
-        
+
         this.config_chopOff = config.getString("Messages.Chop Toggle Off", "Falling tree blocks disabled.");
         outConfig.set("Messages.Chop Toggle Off", this.config_chopOff);
-        
+
         this.config_canDisable = config.getBoolean("Players Can Disable", true);
         outConfig.set("Players Can Disable", this.config_canDisable);
 
@@ -96,7 +96,7 @@ public class GraviTree extends JavaPlugin implements Listener
         this.config_allow_blocks_dropping = config.getBoolean("AllowBlocksDropping", false);
         outConfig.set("AllowBlocksDropping", this.config_allow_blocks_dropping);
 
-        
+
         try
         {
             outConfig.save(configFile);
@@ -106,7 +106,7 @@ public class GraviTree extends JavaPlugin implements Listener
             AddLogEntry("Encountered an issue while writing to the config file.");
             e.printStackTrace();
         }
-	    
+
 	    //register for events
 		this.getServer().getPluginManager().registerEvents(this, this);
 
@@ -123,7 +123,7 @@ public class GraviTree extends JavaPlugin implements Listener
 
         AddLogEntry("GraviTree enabled.");
 	}
-	
+
 	public void onDisable()
 	{
 	    @SuppressWarnings("unchecked")
@@ -134,23 +134,23 @@ public class GraviTree extends JavaPlugin implements Listener
             data.saveChanges();
             data.waitForSaveComplete();
         }
-        
+
         AddLogEntry("GraviTree disabled.");
 	}
-	
+
 	//handles slash commands
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
         Player player = null;
-        if (sender instanceof Player) 
+        if (sender instanceof Player)
         {
             player = (Player) sender;
         }
-        
+
         if(cmd.getName().equalsIgnoreCase("treesfall") && player != null)
         {
             if(!this.config_canDisable) return true;
-            
+
             PlayerData playerData = PlayerData.FromPlayer(player);
             playerData.setChopEnabled(!playerData.isChopEnabled());
             if(playerData.isChopEnabled())
@@ -163,47 +163,47 @@ public class GraviTree extends JavaPlugin implements Listener
             }
             return true;
         }
-        
+
         return false;
     }
-	
+
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
         PlayerData.Preload(player);
     }
-    
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onPlayerQuit(PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
         PlayerData.FromPlayer(player).saveChanges();
     }
-	
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onBlockBreak(BlockBreakEvent event)
     {
         Block brokenBlock = event.getBlock();
-        
+
         World world = brokenBlock.getWorld();
         if(this.config_overworld_only && world.getEnvironment() != Environment.NORMAL) return;
-               
+
         if(!GraviTree.blockIsLog(brokenBlock)) return;
-        
+
         Player player = event.getPlayer();
         if(!this.hasPermission(player)) return;
-        
+
         PlayerData playerData = PlayerData.FromPlayer(player);
-        
+
         if(!playerData.isGotChopInfo() && (!playerData.isChopEnabled() || this.config_canDisable))
         {
             player.sendMessage(ChatColor.AQUA + GraviTree.instance.config_chopInfoMessage);
             playerData.setGotChopInfo(true);
         }
-        
+
         if(!playerData.isChopEnabled()) return;
-        
+
         Block bestUnderBlock = brokenBlock;
         do
         {
@@ -218,7 +218,7 @@ public class GraviTree extends JavaPlugin implements Listener
             nearBelowFaces.add(BlockFace.SOUTH_EAST);
             nearBelowFaces.add(BlockFace.NORTH_WEST);
             nearBelowFaces.add(BlockFace.SOUTH_WEST);
-                
+
             do
             {
                 Block nearBelowBlock = bestUnderBlock.getRelative(nearBelowFaces.poll());
@@ -234,10 +234,10 @@ public class GraviTree extends JavaPlugin implements Listener
                 }
             } while(!nearBelowFaces.isEmpty());
         } while(GraviTree.blockIsLog(bestUnderBlock));
-        
-        
+
+
         if(!this.blockIsRootType(bestUnderBlock)) return;
-        
+
         BlockFace [] adjacentFaces = new BlockFace []
         {
             BlockFace.EAST,
@@ -249,21 +249,21 @@ public class GraviTree extends JavaPlugin implements Listener
             BlockFace.SOUTH_EAST,
             BlockFace.SOUTH_WEST
         };
-        
+
         for(BlockFace adjacentFace : adjacentFaces)
         {
             Block adjacentBlock = brokenBlock.getRelative(adjacentFace);
             if(GraviTree.blockIsLog(adjacentBlock)) return;
         }
-        
+
         Block aboveBlock = brokenBlock.getRelative(BlockFace.UP);
         while(GraviTree.blockIsLog(aboveBlock))
         {
             aboveBlock = aboveBlock.getRelative(BlockFace.UP);
         }
-        
+
         if(!this.blockIsTreeTopper(aboveBlock)) return;
-        
+
         int radius = 20;
         if(brokenBlock.getType() == Material.DARK_OAK_LOG)
         {
@@ -272,17 +272,17 @@ public class GraviTree extends JavaPlugin implements Listener
         FallTask fallTask = new FallTask(brokenBlock, true, this.config_allow_blocks_dropping, bestUnderBlock.getX() - radius, bestUnderBlock.getX() + radius, bestUnderBlock.getZ() - radius, bestUnderBlock.getZ() + radius, player);
         Bukkit.getScheduler().runTaskLater(GraviTree.instance, fallTask, 1L);
     }
-    
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     void onEntityDamage(EntityDamageEvent event)
     {
         if(this.config_logs_damage_players || event.getEntityType() != EntityType.PLAYER) return;
-        
+
         DamageCause cause = event.getCause();
         if(cause != DamageCause.FALLING_BLOCK && cause != DamageCause.SUFFOCATION) return;
-        
+
         Block faceBlock = ((Player)(event.getEntity())).getEyeLocation().getBlock();
-        
+
         Material type = faceBlock.getType();
         if(Tag.LOGS.isTagged(type) || type == Material.AIR)
         {
@@ -300,17 +300,17 @@ public class GraviTree extends JavaPlugin implements Listener
     static boolean outsideWorldBorder(int x, int y, int z, int borderCenterX, int borderCenterY, int borderCenterZ, double borderSize, double borderDamageBuffer)
     {
         int damageDistance = (int)(borderSize / 2 + borderDamageBuffer);
-        
+
         int maxx = borderCenterX + damageDistance;
         if(x > maxx) return true;
         int minx = borderCenterX - damageDistance;
         if(x < minx) return true;
-        
+
         int maxz = borderCenterZ + damageDistance;
         if(z > maxz) return true;
         int minz = borderCenterZ - damageDistance;
         if(z < minz) return true;
-        
+
         return false;
     }
 
@@ -324,7 +324,7 @@ public class GraviTree extends JavaPlugin implements Listener
     {
         block.setMetadata("gravitree.seen", new FixedMetadataValue(GraviTree.instance, Boolean.TRUE));
     }
-    
+
     private static boolean haveVisited(Block block)
     {
         return block.hasMetadata("gravitree.seen");
@@ -343,37 +343,43 @@ public class GraviTree extends JavaPlugin implements Listener
     private boolean blockIsRootType(Block block)
     {
         Material type = block.getType();
-        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE || type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND || type == Material.PODZOL || type == Material.NETHERRACK || type == Material.WARPED_NYLIUM || type == Material.CRIMSON_NYLIUM)
+        if(type == Material.DIRT || type == Material.GRASS || type == Material.STONE ||
+                type == Material.COBBLESTONE || ExtraTags.TERRACOTTA.isTagged(type) || type == Material.SAND ||
+                type == Material.PODZOL || type == Material.NETHERRACK || type == Material.WARPED_NYLIUM ||
+                type == Material.CRIMSON_NYLIUM || type == Material.MANGROVE_ROOTS)
         {
             return true;
         }
             return false;
     }
-    
+
     private boolean blockIsTreeTopper(Block block)
     {
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.SNOW || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
+        if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.SNOW || type == Material.NETHER_WART_BLOCK
+                || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
             return true;
         }
             return false;
     }
-    
+
     private static boolean blockIsPassthrough(Block block)
     {
         Material type = block.getType();
-        if(Tag.LEAVES.isTagged(type) || Tag.LOGS.isTagged(type)  || type == Material.SNOW || type == Material.CRIMSON_STEM || type == Material.WARPED_STEM || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
+        if(Tag.LEAVES.isTagged(type) || Tag.LOGS.isTagged(type)  || type == Material.SNOW || type == Material.CRIMSON_STEM ||
+                type == Material.WARPED_STEM || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK ||
+                type == Material.SHROOMLIGHT)
         {
             return true;
         }
         return false;
     }
-    
+
     static boolean blockIsBreakable(Block block)
     {
         if(block.getY() < 0) return false;
-        
+
         Material type = block.getType();
         if(Tag.LEAVES.isTagged(type) || type == Material.AIR || type == Material.VINE || type == Material.COCOA || type == Material.TORCH || type == Material.SNOW || type == Material.WEEPING_VINES || type == Material.TWISTING_VINES || type == Material.NETHER_WART_BLOCK || type == Material.WARPED_WART_BLOCK || type == Material.SHROOMLIGHT)
         {
@@ -381,7 +387,7 @@ public class GraviTree extends JavaPlugin implements Listener
         }
         return false;
     }
-    
+
     static boolean blockIsTreeAdjacent(Block block)
     {
         Material type = block.getType();
@@ -391,7 +397,7 @@ public class GraviTree extends JavaPlugin implements Listener
         }
         return false;
     }
-    
+
     class FallTask implements Runnable
     {
         private Block blockToDrop;
@@ -424,7 +430,7 @@ public class GraviTree extends JavaPlugin implements Listener
                 fallingBlock.setDropItem(this.allowBlocksDroppring);
 
                 blockToDrop.setType(Material.AIR);
-                
+
                 if(this.breakUnderBlocks)
                 {
                     Block underBlock = blockToDrop.getRelative(BlockFace.DOWN);
@@ -435,7 +441,7 @@ public class GraviTree extends JavaPlugin implements Listener
                     }
                 }
             }
-            
+
             ConcurrentLinkedQueue<Block> nearAboveBlocks = new ConcurrentLinkedQueue<Block>();
             Block aboveBlock = this.blockToDrop.getRelative(BlockFace.UP);
             nearAboveBlocks.add(aboveBlock);
@@ -447,7 +453,7 @@ public class GraviTree extends JavaPlugin implements Listener
             nearAboveBlocks.add(aboveBlock.getRelative(BlockFace.SOUTH_EAST));
             nearAboveBlocks.add(aboveBlock.getRelative(BlockFace.NORTH_WEST));
             nearAboveBlocks.add(aboveBlock.getRelative(BlockFace.SOUTH_WEST));
-            
+
             boolean foundLogAbove = false;
             ConcurrentLinkedQueue<FallTask> newTasks = new ConcurrentLinkedQueue<FallTask>();
             for(Block block : nearAboveBlocks)
@@ -467,17 +473,17 @@ public class GraviTree extends JavaPlugin implements Listener
                     return;
                 }
             }
-            
+
             long i = 0;
             for(FallTask task : newTasks)
             {
                 Bukkit.getScheduler().runTaskLater(GraviTree.instance, task, ++i);
             }
-            
+
             if(!foundLogAbove && !this.breakUnderBlocks)
             {
                 ConcurrentLinkedQueue<Block> blocksToFall = new ConcurrentLinkedQueue<Block>();
-                        
+
                 GraviTree.markVisited(aboveBlock);
                 ConcurrentLinkedQueue<Block> blocksToVisit = new ConcurrentLinkedQueue<Block>();
                 blocksToVisit.add(this.blockToDrop.getRelative(BlockFace.EAST));
@@ -492,7 +498,7 @@ public class GraviTree extends JavaPlugin implements Listener
                 {
                     GraviTree.markVisited(block);
                 }
-                
+
                 Block nextBlock;
                 while((nextBlock = blocksToVisit.poll()) != null)
                 {
@@ -507,7 +513,7 @@ public class GraviTree extends JavaPlugin implements Listener
                             }
                         }
                     }
-                    
+
                     if(GraviTree.blockIsPassthrough(nextBlock))
                     {
                         Block [] nextBlocks = new Block []
@@ -516,7 +522,7 @@ public class GraviTree extends JavaPlugin implements Listener
                             nextBlock.getRelative(BlockFace.UP),
                             nextBlock.getRelative(BlockFace.DOWN)
                         };
-                        
+
                         for(Block nextNextBlock : nextBlocks)
                         {
                             Block adjacentBlock = nextNextBlock.getRelative(BlockFace.EAST);
@@ -525,63 +531,63 @@ public class GraviTree extends JavaPlugin implements Listener
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.WEST);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.NORTH);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.SOUTH);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.SOUTH_EAST);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.NORTH_EAST);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.SOUTH_WEST);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.NORTH_WEST);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.DOWN);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
                                 blocksToVisit.add(adjacentBlock);
                                 GraviTree.markVisited(adjacentBlock);
                             }
-                            
+
                             adjacentBlock = nextNextBlock.getRelative(BlockFace.UP);
                             if(adjacentBlock.getX() >= min_x && adjacentBlock.getX() <= max_x && adjacentBlock.getZ() >= min_z && adjacentBlock.getZ() <= max_z && !GraviTree.haveVisited(adjacentBlock))
                             {
@@ -591,7 +597,7 @@ public class GraviTree extends JavaPlugin implements Listener
                         }
                     }
                 }
-                
+
                 Block blockToDrop;
                 long delayInTicks = 1;
                 while((blockToDrop = blocksToFall.poll()) != null)
