@@ -1,4 +1,4 @@
-name: GraviTree
+name: ${project.name}
 main: me.ryanhamshire.GraviTree.GraviTree
 authors: ['Big_Scary', 'RoboMWM', 'DmitryRendov', 'DrkMatr1984']
 version: ${project.version}
