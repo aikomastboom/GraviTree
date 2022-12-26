@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.ryanhamshire</groupId>
     <artifactId>GraviTree</artifactId>
-    <version>2.9.3</version>
+    <version>2.9.6</version>
     <packaging>jar</packaging>
     <name>GraviTree</name>
     <description>No more floating treetops.</description>
@@ -31,7 +31,8 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.9.2</version>
+            <version>2.11.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -51,12 +52,8 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
-        <repository>
-			<id>drkmatr1984</id>
-			<url>https://minevolt.net/repo/</url>
-		</repository>
     </repositories>
 
 
