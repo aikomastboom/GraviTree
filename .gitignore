@@ -69,3 +69,4 @@ target/
 dependency-reduced-pom.xml
 *.MF
 *.name
+.vscode
