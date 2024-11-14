@@ -1,8 +1,8 @@
 name: ${project.name}
 main: me.ryanhamshire.GraviTree.GraviTree
-authors: ['Big_Scary', 'RoboMWM', 'DmitryRendov', 'DrkMatr1984']
+authors: ['Big_Scary', 'RoboMWM', 'DmitryRendov', 'DrkMatr1984', 'AikoMastboom']
 version: ${project.version}
-api-version: 1.14
+api-version: 1.21
 softdepend: [PlaceholderAPI]
 commands:
    treesfall:

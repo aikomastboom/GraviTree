@@ -63,7 +63,7 @@ class PlayerData
         {
             try
             {
-                PlayerData playerData = (PlayerData)(data.get(0).value());
+                PlayerData playerData = (PlayerData)(data.getFirst().value());
                 return playerData;
             }
             catch(Exception e)
@@ -101,7 +101,8 @@ class PlayerData
             {
                 this.loadingThread.join();
             }
-            catch(InterruptedException e){}
+            catch(InterruptedException ignore){
+            }
             this.loadingThread = null;
         }
     }
@@ -114,7 +115,8 @@ class PlayerData
             {
                 this.savingThread.join();
             }
-            catch(InterruptedException e){}
+            catch(InterruptedException ignore){
+            }
         }
     }
     
@@ -172,7 +174,8 @@ class PlayerData
                 {
                     if(needRetry) Thread.sleep(5);
                 }
-                catch(InterruptedException exception) {}
+                catch(InterruptedException ignore) {
+                }
                 
             }while(needRetry && retriesRemaining >= 0);
             
